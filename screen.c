@@ -14,15 +14,39 @@
 #include <stdio.h>
 #include <unistd.h>                  /*  for sleep()  */
 #include <curses.h>
+#include <string.h>
 
 #include "screen.h"
 
 WINDOW * mainwin;
 
-void write_line(int line_number, char* text)
+void write_line(int line_number, const char* text, int cursor_start, int cursor_end)
 {
-	color_set(1, NULL);
-	mvaddstr(6 + line_number, 32, text);
+	int row = 6 + line_number;
+	int col = 32;
+
+	for(unsigned int i = 0; i < strlen(text); ++i)
+	{
+		if(i >= cursor_start && i <= cursor_end)
+		{
+			color_set(2, NULL);
+		}
+		else
+		{
+			color_set(1, NULL);
+		}
+		mvaddch(row, col + i, text[i]);		
+	}
+
+	// if(cursor_start != -1)
+	// {
+	// 	if(cursor_start > 0)
+	// 	{
+	// 		char* pre;
+	// 		strncpy(substr, buff+10, 4);
+	// 	}
+	// }
+	// mvaddstr(6 + line_number, 32, text);
 	refresh();
 }
 
@@ -35,13 +59,9 @@ int init_screen()
 	exit(EXIT_FAILURE);
     }
 
+    curs_set(0);
+
     start_color();                    /*  Initialize colours  */
-
-
-    /*  Print message  */
-
-    mvaddstr(6, 32, " Hello, world! ");
-
 
     /*  Make sure we are able to do what we want. If
 	has_colors() returns FALSE, we cannot use colours.
@@ -61,8 +81,8 @@ int init_screen()
 
 	    specifies the pair.                                  */
 
-	init_pair(1,  COLOR_RED,     COLOR_BLACK);
-	init_pair(2,  COLOR_GREEN,   COLOR_BLACK);
+	init_pair(1,  COLOR_WHITE,   COLOR_BLACK);
+	init_pair(2,  COLOR_BLACK,   COLOR_WHITE);
 	init_pair(3,  COLOR_YELLOW,  COLOR_BLACK);
 	init_pair(4,  COLOR_BLUE,    COLOR_BLACK);
 	init_pair(5,  COLOR_MAGENTA, COLOR_BLACK);
