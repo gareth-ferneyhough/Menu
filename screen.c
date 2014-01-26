@@ -37,16 +37,6 @@ void write_line(int line_number, const char* text, int cursor_start, int cursor_
 		}
 		mvaddch(row, col + i, text[i]);		
 	}
-
-	// if(cursor_start != -1)
-	// {
-	// 	if(cursor_start > 0)
-	// 	{
-	// 		char* pre;
-	// 		strncpy(substr, buff+10, 4);
-	// 	}
-	// }
-	// mvaddstr(6 + line_number, 32, text);
 	refresh();
 }
 
