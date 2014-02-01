@@ -13,14 +13,12 @@ typedef struct data_node
 
 typedef struct menu_node
 {
-	const char* display_name;
+	char display_name[MAX_NAME_LEN];
 	data_node_t* data_node;
 	struct menu_node* parent;
 	struct menu_node* children[MAX_CHILDREN];
 	int selected_child_index;
 	int num_children;
-	//char children_text[MAX_CHILDREN * MAX_NAME_LEN + MAX_CHILDREN]; // enough room for children, spaces, and null
-
 } menu_node_t;
 
 void init_menu();

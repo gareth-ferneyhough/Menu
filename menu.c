@@ -11,9 +11,6 @@ menu_node_t menu_nodes[20];
 char line1_text[DISPLAY_COLS + 1]; // plus 1 for null char
 char line2_text[DISPLAY_COLS + 1];
 
-//int selected_node_name_index;
-//int selected_node_name_end;
-
 void init_menu()
 {
 	int node_array_index = 0;
@@ -25,7 +22,7 @@ void init_menu()
 	add_child(root, temp);
 
 	temp = &(menu_nodes[node_array_index++]);
-	init_menu_node(temp, "Water slip", 0, root);
+	init_menu_node(temp, "Water Slip", 0, root);
 	add_child(root, temp);
 
 	temp = &(menu_nodes[node_array_index++]);
@@ -61,7 +58,9 @@ void update_line2()
 
 void init_menu_node(menu_node_t* node, const char* name, data_node_t* data, menu_node_t* parent)
 {
-	node->display_name = name;
+	strcpy(node->display_name, name);
+	//node->display_name = name;
+
 	node->data_node = data;
 	node->parent = parent;
 	node->selected_child_index = 0;
@@ -97,14 +96,10 @@ void draw_menu()
 {
 	update_line1();
 	update_line2();
-	
-	//line1_text = current_node->display_name;
-	write_line(1, line1_text, -1, -1);
 
-	//line2_text = selected_node->display_name;
-	//const char* selected_node_display_name = ;
-	//unsigned int name_length = strlen(selected_node_display_name);
-	write_line(2, line2_text, -1, -1);
+	write_line(1, line1_text, -1, -1);
+	write_line(2, selected_node->display_name, -1, -1);
+//	write_line(2, line2_text, -1, -1);
 
 }
 

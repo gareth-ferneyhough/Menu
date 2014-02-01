@@ -25,6 +25,10 @@ void write_line(int line_number, const char* text, int cursor_start, int cursor_
 	int row = 6 + line_number;
 	int col = 32;
 
+	// clear line
+	wmove(mainwin, row, 0);
+	clrtoeol();
+
 	for(unsigned int i = 0; i < strlen(text); ++i)
 	{
 		if(i >= cursor_start && i <= cursor_end)
@@ -88,22 +92,6 @@ int init_screen()
 	init_pair(13, COLOR_BLACK,   COLOR_CYAN);
 	}
 
-
-	/*  Use them to print of bunch of "Hello, world!"s  */
-
-	// while ( n <= 13 ) {
-	//     color_set(n, NULL);
-	//     mvaddstr(6 + n, 32, " Hello, world! ");
-	//     n++;
-	// }
- //    }
-
-
-    /*  Refresh the screen and sleep for a
-	while to get the full screen effect  */
-
-    //refresh();
-    //sleep(3);
     return EXIT_SUCCESS;
 }
 
