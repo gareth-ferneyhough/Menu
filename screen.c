@@ -50,6 +50,8 @@ int init_screen()
     }
 
     curs_set(0);
+	noecho();
+	cbreak();
 
     start_color();                    /*  Initialize colours  */
 
@@ -103,6 +105,24 @@ int init_screen()
     //refresh();
     //sleep(3);
     return EXIT_SUCCESS;
+}
+
+int get_char()
+{
+	int c = wgetch(mainwin);
+	switch(c)
+	{	
+		case 'w': //27
+			return 1;
+		case 's':
+			return 2;
+		case 'a':
+			return 3;
+		case 'd':
+			return 4;
+		default:
+			return -1;
+	}
 }
 
 int destroy_screen()
