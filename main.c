@@ -10,8 +10,8 @@ int main()
 		int key = get_char();
 		if(key == 1) navigate_up();
 		else if(key == 2) navigate_down();
-		else if(key == 3) navigate_forward();
-		else if(key == 4) navigate_back();
+		else if(key == 3) navigate_back();
+		else if(key == 4) navigate_forward();
 	}
 	
 	destroy_menu();

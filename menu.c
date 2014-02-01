@@ -17,11 +17,19 @@ void init_menu()
 	root = &(menu_nodes[node_array_index++]);
 	init_menu_node(root, "Main Menu", 0, 0);
 
-	menu_node_t* temp = &(menu_nodes[node_array_index++]);
-	init_menu_node(temp, "Temperature", 0, root);
-	add_child(root, temp);
+	menu_node_t* temperature = &(menu_nodes[node_array_index++]);
+	init_menu_node(temperature, "Temperature", 0, root);
+	add_child(root, temperature);
 
-	temp = &(menu_nodes[node_array_index++]);
+	menu_node_t* tc1 = &(menu_nodes[node_array_index++]);
+	init_menu_node(tc1, "TC1", 0, temperature);
+	add_child(temperature, tc1);
+
+	menu_node_t* tc2 = &(menu_nodes[node_array_index++]);
+	init_menu_node(tc2, "TC2", 0, temperature);
+	add_child(temperature, tc2);
+
+	menu_node_t* temp = &(menu_nodes[node_array_index++]);
 	init_menu_node(temp, "Water Slip", 0, root);
 	add_child(root, temp);
 
@@ -129,7 +137,22 @@ void navigate_down()
 }
 
 void navigate_forward()
-{}
+{
+	if(selected_node->num_children != 0)
+	{
+		selected_node->selected_child_index = 0;
+		current_node = selected_node;
+		selected_node = selected_node->children[0];
+	}
+	draw_menu();
+}
 
 void navigate_back()
-{}
+{
+	if(current_node->parent)
+	{
+		current_node = current_node->parent;
+		selected_node = current_node->children[current_node->selected_child_index];	
+	}
+	draw_menu();
+}
