@@ -2,11 +2,13 @@
 #include "menu_p.h"
 #include "screen.h"
 #include <string.h>
+#include <stdlib.h>
 
 menu_node_t* root;
 menu_node_t* current_node;
 menu_node_t* selected_node;
 menu_node_t menu_nodes[20];
+data_node_t data_nodes[20];
 
 char line1_text[DISPLAY_COLS + 1]; // plus 1 for null char
 char line2_text[DISPLAY_COLS + 1];
@@ -14,6 +16,13 @@ char line2_text[DISPLAY_COLS + 1];
 void init_menu()
 {
 	int node_array_index = 0;
+	int data_array_index = 0;
+
+	// Create data nodes
+	data_node_t* data = &(data_nodes[data_array_index++]);
+	data->value = "3.21";
+	data->writable = true;
+
 	root = &(menu_nodes[node_array_index++]);
 	init_menu_node(root, "Main Menu", 0, 0);
 
@@ -22,7 +31,7 @@ void init_menu()
 	add_child(root, temperature);
 
 	menu_node_t* tc1 = &(menu_nodes[node_array_index++]);
-	init_menu_node(tc1, "TC1", 0, temperature);
+	init_menu_node(tc1, "TC1", data, temperature);
 	add_child(temperature, tc1);
 
 	menu_node_t* tc2 = &(menu_nodes[node_array_index++]);
@@ -61,6 +70,19 @@ void update_line2()
 	 * its value if it is a parameter.
 	 */ 
  	strncpy(line2_text, selected_node->display_name, DISPLAY_COLS);
+ 	if(selected_node->data_node)
+ 	{
+ 		int num_spaces = DISPLAY_COLS - strlen(line2_text) 
+ 				- strlen(selected_node->data_node->value);
+
+		for(int i = 0; i < num_spaces; ++i)
+		{
+			strcat(line2_text, " ");
+		}
+		//sprintf(num, "%d", num_spaces);
+		strcat(line2_text, selected_node->data_node->value);
+	}
+
 	line1_text[DISPLAY_COLS + 1] = '\0';
 }
 
@@ -106,8 +128,8 @@ void draw_menu()
 	update_line2();
 
 	write_line(1, line1_text, -1, -1);
-	write_line(2, selected_node->display_name, -1, -1);
-//	write_line(2, line2_text, -1, -1);
+	//write_line(2, selected_node->display_name, -1, -1);
+	write_line(2, line2_text, -1, -1);
 
 }
 
