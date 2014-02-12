@@ -202,6 +202,34 @@ int add_child(menu_node_t* node, menu_node_t* child)
 	return 0;
 }
 
+void increment_data_node()
+{
+	if(selected_node->data_node->uses_i_value)
+	{
+		selected_node->data_node->i_value += 
+			selected_node->data_node->increment_value;
+	}
+	else
+	{
+		selected_node->data_node->f_value += 
+			selected_node->data_node->increment_value;
+	} 
+}
+
+void decrement_data_node()
+{
+	if(selected_node->data_node->uses_i_value)
+	{
+		selected_node->data_node->i_value -= 
+			selected_node->data_node->increment_value;
+	}
+	else
+	{
+		selected_node->data_node->f_value -= 
+			selected_node->data_node->increment_value;
+	} 
+}
+
 void draw_menu()
 {
 	update_line1();
@@ -227,7 +255,12 @@ void destroy_menu()
 
 void navigate_up()
 {
-	if(current_node->selected_child_index > 0)
+	if(data_node_selected)
+	{
+		increment_data_node();
+	}
+
+	else if(current_node->selected_child_index > 0)
 	{
 		current_node->selected_child_index--;
 		selected_node = current_node->children[current_node->selected_child_index];
@@ -237,7 +270,12 @@ void navigate_up()
 
 void navigate_down()
 {
-	if(current_node->selected_child_index < current_node->num_children - 1)
+	if(data_node_selected)
+	{
+		decrement_data_node();
+	}
+
+	else if(current_node->selected_child_index < current_node->num_children - 1)
 	{
 		current_node->selected_child_index++;
 		selected_node = current_node->children[current_node->selected_child_index];
