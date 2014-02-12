@@ -80,6 +80,24 @@ void init_menu()
 	c2_wet_data->writable = true;
 	c2_wet_data->increment_value = 0.01;
 
+	// Water Slip Threshold
+	data_node_t* threshold = &(data_nodes[data_array_index++]);
+	threshold->i_value = 25;
+	threshold->uses_i_value = true;
+	threshold->writable = true;
+	threshold->increment_value = 1;
+
+	// Root Nodes
+	data_node_t* fw_rev = &(data_nodes[data_array_index++]);
+	fw_rev->f_value = 0.1;
+	fw_rev->uses_i_value = false;
+	fw_rev->writable = false;
+
+	data_node_t* serial_num = &(data_nodes[data_array_index++]);
+	serial_num->i_value = 12345;
+	serial_num->uses_i_value = true;
+	serial_num->writable = false;
+
 	// Root Menu
 	root = &(menu_nodes[node_array_index++]);
 	init_menu_node(root, "Main Menu", 0, 0);
@@ -126,11 +144,23 @@ void init_menu()
 	init_menu_node(ch2dry, "CH2 Dry", c2_dry_data, waterslip);
 	add_child(waterslip, ch2dry);
 
+	menu_node_t* threshold_node = &(menu_nodes[node_array_index++]);
+	init_menu_node(threshold_node, "Threshold", threshold, waterslip);
+	add_child(waterslip, threshold_node);
 
 	// Network Nodes
 	menu_node_t* temp = &(menu_nodes[node_array_index++]);
 	init_menu_node(temp, "Network", 0, root);
 	add_child(root, temp);
+
+	// Root Nodes
+	menu_node_t* serial_node = &(menu_nodes[node_array_index++]);
+	init_menu_node(serial_node, "Serial Number", serial_num, root);
+	add_child(root, serial_node);
+
+	menu_node_t* fw_node = &(menu_nodes[node_array_index++]);
+	init_menu_node(fw_node, "Firmware Rev", fw_rev, root);
+	add_child(root, fw_node);
 
 	current_node = root;
 	selected_node = root->children[0];
