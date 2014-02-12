@@ -3,6 +3,7 @@
 #include "screen.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 menu_node_t* root;
 menu_node_t* current_node;
@@ -18,10 +19,33 @@ void init_menu()
 	int node_array_index = 0;
 	int data_array_index = 0;
 
-	// Create data nodes
-	data_node_t* data = &(data_nodes[data_array_index++]);
-	data->value = "3.21";
-	data->writable = true;
+	// CH1 data node
+	data_node_t* ch1_data = &(data_nodes[data_array_index++]);
+	ch1_data->f_value = 4.0;
+	ch1_data->uses_i_value = false;
+	ch1_data->writable = true;
+	ch1_data->increment_value = 0.1;
+
+	// CH2 data node
+	data_node_t* ch2_data = &(data_nodes[data_array_index++]);
+	ch2_data->f_value = 4.0;
+	ch2_data->uses_i_value = false;
+	ch2_data->writable = true;
+	ch2_data->increment_value = 0.1;
+
+	// High temp data node
+	data_node_t* high_temp_data = &(data_nodes[data_array_index++]);
+	high_temp_data->f_value = 6.0;
+	high_temp_data->uses_i_value = false;
+	high_temp_data->writable = true;
+	high_temp_data->increment_value = 0.1;
+
+	// Low temp data node
+	data_node_t* low_temp_data = &(data_nodes[data_array_index++]);
+	low_temp_data->f_value = 0.0;
+	low_temp_data->uses_i_value = false;
+	low_temp_data->writable = true;
+	low_temp_data->increment_value = 0.1;
 
 	root = &(menu_nodes[node_array_index++]);
 	init_menu_node(root, "Main Menu", 0, 0);
@@ -31,12 +55,20 @@ void init_menu()
 	add_child(root, temperature);
 
 	menu_node_t* tc1 = &(menu_nodes[node_array_index++]);
-	init_menu_node(tc1, "TC1", data, temperature);
+	init_menu_node(tc1, "CH1 Setpoint", ch1_data, temperature);
 	add_child(temperature, tc1);
 
 	menu_node_t* tc2 = &(menu_nodes[node_array_index++]);
-	init_menu_node(tc2, "TC2", 0, temperature);
+	init_menu_node(tc2, "CH2 Setpoint", ch2_data, temperature);
 	add_child(temperature, tc2);
+
+	menu_node_t* high_temp = &(menu_nodes[node_array_index++]);
+	init_menu_node(high_temp, "High Temp Alarm", high_temp_data, temperature);
+	add_child(temperature, high_temp);
+
+	menu_node_t* low_temp = &(menu_nodes[node_array_index++]);
+	init_menu_node(low_temp, "Low Temp Alarm", low_temp_data, temperature);
+	add_child(temperature, low_temp);
 
 	menu_node_t* temp = &(menu_nodes[node_array_index++]);
 	init_menu_node(temp, "Water Slip", 0, root);
@@ -72,15 +104,24 @@ void update_line2()
  	strncpy(line2_text, selected_node->display_name, DISPLAY_COLS);
  	if(selected_node->data_node)
  	{
+ 		char parameter_string[20];
+ 		if(selected_node->data_node->uses_i_value)
+ 		{
+ 			sprintf(parameter_string, "%d", selected_node->data_node->i_value);
+ 		}
+ 		else
+ 		{
+ 			sprintf(parameter_string, "%.02f", selected_node->data_node->f_value);
+ 		} 		
+
  		int num_spaces = DISPLAY_COLS - strlen(line2_text) 
- 				- strlen(selected_node->data_node->value);
+ 				- strlen(parameter_string);
 
 		for(int i = 0; i < num_spaces; ++i)
 		{
 			strcat(line2_text, " ");
 		}
-		//sprintf(num, "%d", num_spaces);
-		strcat(line2_text, selected_node->data_node->value);
+		strcat(line2_text, parameter_string);
 	}
 
 	line1_text[DISPLAY_COLS + 1] = '\0';

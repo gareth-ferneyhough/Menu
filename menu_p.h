@@ -6,9 +6,11 @@
 
 typedef struct data_node
 {
-	char* value;
+	float f_value;
+	int i_value;
+	bool uses_i_value;
 	bool writable;
-
+	float increment_value;
 } data_node_t;
 
 typedef struct menu_node
