@@ -20,10 +20,22 @@
 
 WINDOW * mainwin;
 
-void write_line(int line_number, const char* text, int cursor_start, int cursor_end)
+int cursor_line = 1;
+int cursor_col = 1;
+
+void set_cursor_position(int line_number, int column)
+{
+	cursor_line = line_number;
+	cursor_col = column;
+}
+
+void write_line(int line_number, const char* text)
 {
 	int row = 6 + line_number;
 	int col = 32;
+
+	int cursor_start = cursor_col -1;
+	int cursor_end = cursor_start;
 
 	// clear line
 	wmove(mainwin, row, 0);
@@ -31,7 +43,7 @@ void write_line(int line_number, const char* text, int cursor_start, int cursor_
 
 	for(unsigned int i = 0; i < strlen(text); ++i)
 	{
-		if(i >= cursor_start && i <= cursor_end)
+		if(i >= cursor_start && i <= cursor_end && line_number == cursor_line)
 		{
 			color_set(2, NULL);
 		}

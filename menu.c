@@ -14,10 +14,15 @@ data_node_t data_nodes[20];
 char line1_text[DISPLAY_COLS + 1]; // plus 1 for null char
 char line2_text[DISPLAY_COLS + 1];
 
+bool data_node_selected;
+int cursor_col;
+
 void init_menu()
 {
 	int node_array_index = 0;
 	int data_array_index = 0;
+	data_node_selected = false;
+	cursor_col = 1;
 
 	// CH1 data node
 	data_node_t* ch1_data = &(data_nodes[data_array_index++]);
@@ -47,9 +52,39 @@ void init_menu()
 	low_temp_data->writable = true;
 	low_temp_data->increment_value = 0.1;
 
+	// Water Slip CH1 Dry
+	data_node_t* c1_dry_data = &(data_nodes[data_array_index++]);
+	c1_dry_data->f_value = 1.2;
+	c1_dry_data->uses_i_value = false;
+	c1_dry_data->writable = true;
+	c1_dry_data->increment_value = 0.01;
+
+	// Water Slip CH1 Wet
+	data_node_t* c1_wet_data = &(data_nodes[data_array_index++]);
+	c1_wet_data->f_value = 1.4;
+	c1_wet_data->uses_i_value = false;
+	c1_wet_data->writable = true;
+	c1_wet_data->increment_value = 0.01;
+
+	// Water Slip CH2 Dry
+	data_node_t* c2_dry_data = &(data_nodes[data_array_index++]);
+	c2_dry_data->f_value = 1.2;
+	c2_dry_data->uses_i_value = false;
+	c2_dry_data->writable = true;
+	c2_dry_data->increment_value = 0.01;
+
+	// Water Slip CH2 Wet
+	data_node_t* c2_wet_data = &(data_nodes[data_array_index++]);
+	c2_wet_data->f_value = 1.4;
+	c2_wet_data->uses_i_value = false;
+	c2_wet_data->writable = true;
+	c2_wet_data->increment_value = 0.01;
+
+	// Root Menu
 	root = &(menu_nodes[node_array_index++]);
 	init_menu_node(root, "Main Menu", 0, 0);
 
+	// Temperature Nodes
 	menu_node_t* temperature = &(menu_nodes[node_array_index++]);
 	init_menu_node(temperature, "Temperature", 0, root);
 	add_child(root, temperature);
@@ -70,15 +105,33 @@ void init_menu()
 	init_menu_node(low_temp, "Low Temp Alarm", low_temp_data, temperature);
 	add_child(temperature, low_temp);
 
-	menu_node_t* temp = &(menu_nodes[node_array_index++]);
-	init_menu_node(temp, "Water Slip", 0, root);
-	add_child(root, temp);
+	// Water Slip Nodes
+	menu_node_t* waterslip = &(menu_nodes[node_array_index++]);
+	init_menu_node(waterslip, "Water Slip", 0, root);
+	add_child(root, waterslip);
 
-	temp = &(menu_nodes[node_array_index++]);
+	menu_node_t* ch1wet = &(menu_nodes[node_array_index++]);
+	init_menu_node(ch1wet, "CH1 Wet", c1_wet_data, waterslip);
+	add_child(waterslip, ch1wet);
+
+	menu_node_t* ch1dry = &(menu_nodes[node_array_index++]);
+	init_menu_node(ch1dry, "CH1 Dry", c1_dry_data, waterslip);
+	add_child(waterslip, ch1dry);
+
+	menu_node_t* ch2wet = &(menu_nodes[node_array_index++]);
+	init_menu_node(ch2wet, "CH2 Wet", c2_wet_data, waterslip);
+	add_child(waterslip, ch2wet);
+
+	menu_node_t* ch2dry = &(menu_nodes[node_array_index++]);
+	init_menu_node(ch2dry, "CH2 Dry", c2_dry_data, waterslip);
+	add_child(waterslip, ch2dry);
+
+
+	// Network Nodes
+	menu_node_t* temp = &(menu_nodes[node_array_index++]);
 	init_menu_node(temp, "Network", 0, root);
 	add_child(root, temp);
 
-	done_adding_children(root);
 	current_node = root;
 	selected_node = root->children[0];
 
@@ -117,6 +170,8 @@ void update_line2()
  		int num_spaces = DISPLAY_COLS - strlen(line2_text) 
  				- strlen(parameter_string);
 
+ 		cursor_col = DISPLAY_COLS - strlen(parameter_string) + 1;
+
 		for(int i = 0; i < num_spaces; ++i)
 		{
 			strcat(line2_text, " ");
@@ -130,7 +185,6 @@ void update_line2()
 void init_menu_node(menu_node_t* node, const char* name, data_node_t* data, menu_node_t* parent)
 {
 	strcpy(node->display_name, name);
-	//node->display_name = name;
 
 	node->data_node = data;
 	node->parent = parent;
@@ -148,30 +202,22 @@ int add_child(menu_node_t* node, menu_node_t* child)
 	return 0;
 }
 
-void done_adding_children(menu_node_t* node)
-{
-	// int destination_index = 0;
-	// for(int i = 0; i < node->last_child_index; ++i)
-	// {
-	// 	strncpy(&(node->children_text[destination_index]),
-	// 		node->children[i]->display_name, 
-	// 		strlen(node->children[i]->display_name));
-
-	// 	destination_index += strlen(node->children[i]->display_name);
-	// 	node->children_text[destination_index++] = ' ';
-	// }
-	// node->children[destination_index] = '\0';
-}
-
 void draw_menu()
 {
 	update_line1();
 	update_line2();
 
-	write_line(1, line1_text, -1, -1);
-	//write_line(2, selected_node->display_name, -1, -1);
-	write_line(2, line2_text, -1, -1);
+	if(data_node_selected)
+	{
+	 	set_cursor_position(2, cursor_col);
+	}
+	else
+	{
+		set_cursor_position(2, 1);			
+	}
 
+	write_line(1, line1_text);
+	write_line(2, line2_text);
 }
 
 void destroy_menu()
@@ -207,12 +253,23 @@ void navigate_forward()
 		current_node = selected_node;
 		selected_node = selected_node->children[0];
 	}
+
+	else if(selected_node->data_node && 
+		selected_node->data_node->writable)
+	{
+		data_node_selected = true;
+	}
+
 	draw_menu();
 }
 
 void navigate_back()
 {
-	if(current_node->parent)
+	if(data_node_selected)
+	{
+		data_node_selected = false;
+	}
+	else if(current_node->parent)
 	{
 		current_node = current_node->parent;
 		selected_node = current_node->children[current_node->selected_child_index];	

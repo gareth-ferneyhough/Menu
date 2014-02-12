@@ -26,7 +26,6 @@ typedef struct menu_node
 void init_menu();
 void init_menu_node(menu_node_t* node, const char* name, data_node_t* data, menu_node_t* parent);
 int add_child(menu_node_t* node, menu_node_t* child);
-void done_adding_children(menu_node_t* node);
 void draw_menu();
 void destroy_menu();
 void update_line1();
